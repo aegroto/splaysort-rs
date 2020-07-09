@@ -1,16 +1,17 @@
 pub mod bottom_up;
+pub mod visit;
 
-trait SplayTree<K: Ord + 'static, V: 'static> {
-    fn insert(&mut self, key: K, value: V);
+pub trait SplayTree<K: Ord + 'static> {
+    fn insert(&mut self, key: K);
     fn search(&self, key: K);
     fn delete(&mut self, key: K);
 
     fn splay(&mut self, key: K);
 }
 
-struct SplayNode<K: Ord + 'static, V> {
+struct SplayNode<K: Ord + 'static> {
     pub key: K,
-    pub value: V,
 
-    // pub left: Option<&SplayNode<K, V>>
+    pub left: Option<Box<SplayNode<K>>>,
+    pub right: Option<Box<SplayNode<K>>>
 }
