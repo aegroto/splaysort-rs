@@ -99,6 +99,22 @@ impl<K: Ord + 'static> SplayTree<K> for TopDownSplayTree<K> {
             } 
 
             // Key is not present in the tree, we splay the last node we were on
+        } else {
+            // Right 
+            if parent_node.right.is_some() {
+                let x = parent_node.right.take().unwrap();
+
+                // Node containing key is an immediate child of the current node
+                // Zig
+                if key == x.key {
+                    let old_anchor = L_anchor.get_or_insert(T);
+                    L_anchor = &mut old_anchor.right;
+
+                    T = x;
+                }
+            } 
+
+            // Key is not present in the tree, we splay the last node we were on
         } 
 
         // Assembling the trees

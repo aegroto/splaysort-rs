@@ -13,12 +13,12 @@ use splay::visit::Visit;
 fn main() {
     let mut splay_tree : TopDownSplayTree<u32> = Default::default();
 
-    splay_tree.insert(5);
     splay_tree.insert(3);
+    splay_tree.insert(5);
 
     splay_tree.in_order_visit();
 
-    splay_tree.splay(3);
+    splay_tree.splay(5);
 
     splay_tree.in_order_visit();
 
