@@ -1,4 +1,6 @@
 pub mod bottom_up;
+pub mod top_down;
+
 pub mod visit;
 
 pub trait SplayTree<K: Ord + 'static> {
