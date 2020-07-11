@@ -89,7 +89,7 @@ impl<K: Ord + 'static + Debug> SplayTree<K> for TopDownSplayTree<K> {
         if key < x.key {
             // Left
             if x.left.is_some() {
-                let mut y = x.left.take().unwrap();
+                let y = x.left.take().unwrap();
 
                 // Node containing key is the left child of the current node
                 // Zig
