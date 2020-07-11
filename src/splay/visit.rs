@@ -3,45 +3,57 @@ use super::SplayNode;
 use std::fmt::Debug;
 
 pub trait Visit {
-    fn in_order_visit(&self);
-    fn pre_order_visit(&self);
-    fn post_order_visit(&self);
+    fn in_order_visit(&self) -> String;
+    fn pre_order_visit(&self) -> String;
+    fn post_order_visit(&self) -> String;
 }
 
 impl<K: Ord + Debug + 'static> Visit for SplayNode<K> {
-    fn in_order_visit(&self) {
+    fn in_order_visit(&self) -> String {
+        let mut output = String::new();
+
         if self.left.is_some() {
-            self.left.as_ref().unwrap().in_order_visit();
+            output += &self.left.as_ref().unwrap().in_order_visit();
         }
 
-        print!("{:?} ", self.key);
+        output += &format!("{:?} ", self.key).as_str();
 
         if self.right.is_some() {
-            self.right.as_ref().unwrap().in_order_visit();
+            output += &self.right.as_ref().unwrap().in_order_visit();
         }
+        
+        output
     }
 
-    fn pre_order_visit(&self) {
-        print!("{:?} ", self.key);
+    fn pre_order_visit(&self) -> String {
+        let mut output = String::new();
+
+        output += &format!("{:?}", self.key).as_str();
 
         if self.left.is_some() {
-            self.left.as_ref().unwrap().pre_order_visit();
+            output += &self.left.as_ref().unwrap().in_order_visit();
         }
 
         if self.right.is_some() {
-            self.right.as_ref().unwrap().pre_order_visit();
+            output += &self.right.as_ref().unwrap().in_order_visit();
         }
+        
+        output
     }
 
-    fn post_order_visit(&self) {
+    fn post_order_visit(&self) -> String {
+        let mut output = String::new();
+
         if self.left.is_some() {
-            self.left.as_ref().unwrap().post_order_visit();
+            output += &self.left.as_ref().unwrap().in_order_visit();
         }
 
         if self.right.is_some() {
-            self.right.as_ref().unwrap().post_order_visit();
+            output += &self.right.as_ref().unwrap().in_order_visit();
         }
 
-        print!("{:?} ", self.key);
+        output += &format!("{:?}", self.key).as_str();
+        
+        output
     }
 }

@@ -3,6 +3,10 @@ pub mod top_down;
 
 pub mod visit;
 
+mod tests;
+
+use std::fmt::Debug;
+
 pub trait SplayTree<K: Ord + 'static> {
     fn insert(&mut self, key: K);
     fn search(&self, key: K);
@@ -11,6 +15,7 @@ pub trait SplayTree<K: Ord + 'static> {
     fn splay(&mut self, key: K);
 }
 
+#[derive(Debug)]
 struct SplayNode<K: Ord + 'static> {
     pub key: K,
 

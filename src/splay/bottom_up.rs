@@ -60,40 +60,40 @@ impl<K: Ord + 'static> SplayTree<K> for BottomUpSplayTree<K> {
     }
 }
 
-impl<K: Ord + Debug + 'static> Visit for BottomUpSplayTree<K> {
-    fn in_order_visit(&self) {
-        if self.root.is_none() {
-            println!("Empty");
-            return;
-        }
+// impl<K: Ord + Debug + 'static> Visit for BottomUpSplayTree<K> {
+//     fn in_order_visit(&self) {
+//         if self.root.is_none() {
+//             println!("Empty");
+//             return;
+//         }
 
-        println!("Root: {:?}", self.root.as_ref().unwrap().key);
+//         println!("Root: {:?}", self.root.as_ref().unwrap().key);
 
-        self.root.as_ref().unwrap().in_order_visit();
-        print!("\n")
-    }
+//         self.root.as_ref().unwrap().in_order_visit();
+//         print!("\n")
+//     }
 
-    fn pre_order_visit(&self) {
-        if self.root.is_none() {
-            println!("Empty");
-            return;
-        }
+//     fn pre_order_visit(&self) {
+//         if self.root.is_none() {
+//             println!("Empty");
+//             return;
+//         }
 
-        println!("Root: {:?}", self.root.as_ref().unwrap().key);
+//         println!("Root: {:?}", self.root.as_ref().unwrap().key);
 
-        self.root.as_ref().unwrap().pre_order_visit();
-        print!("\n")
-    }
+//         self.root.as_ref().unwrap().pre_order_visit();
+//         print!("\n")
+//     }
 
-    fn post_order_visit(&self) {
-        if self.root.is_none() {
-            println!("Empty");
-            return;
-        }
+//     fn post_order_visit(&self) {
+//         if self.root.is_none() {
+//             println!("Empty");
+//             return;
+//         }
 
-        println!("Root: {:?}", self.root.as_ref().unwrap().key);
+//         println!("Root: {:?}", self.root.as_ref().unwrap().key);
 
-        self.root.as_ref().unwrap().post_order_visit();
-        print!("\n")
-    }
-}
+//         self.root.as_ref().unwrap().post_order_visit();
+//         print!("\n")
+//     }
+// }

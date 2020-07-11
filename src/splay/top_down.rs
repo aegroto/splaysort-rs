@@ -5,20 +5,23 @@ use super::visit::Visit;
 use std::fmt::Debug;
 use std::mem::{replace, swap};
 
-use std::borrow::{Borrow};
-
 #[derive(Default)]
+#[derive(Debug)]
 pub struct TopDownSplayTree<K: Ord + 'static> {
     root: Option<Box<SplayNode<K>>>
 }
 
-// impl<K: Ord + 'static> TopDownSplayTree<K> {
-//     fn splay_from(&mut self, root: Box<SplayNode<K>>, key: K) {
+// impl<K: Ord + 'static + Default> TopDownSplayTree<K> {
+//     pub fn init_from_root(root: Box<SplayNode<K>>) -> Self {
+//         let mut tree : TopDownSplayTree::<K> = Default::default();
 
+//         tree.root = Some(root);
+
+//         tree
 //     }
 // }
 
-impl<K: Ord + 'static> SplayTree<K> for TopDownSplayTree<K> {
+impl<K: Ord + 'static + Debug> SplayTree<K> for TopDownSplayTree<K> {
     fn insert(&mut self, key: K) {
         let node : SplayNode<K>  = SplayNode {
             key: key,
@@ -74,43 +77,52 @@ impl<K: Ord + 'static> SplayTree<K> for TopDownSplayTree<K> {
             return;
         }
 
-        let mut L : Option<Box<SplayNode<K>>> = None; 
-        let mut R : Option<Box<SplayNode<K>>> = None;
-        let mut T : Box<SplayNode<K>> = self.root.take().unwrap();
+        let mut left_tree : Option<Box<SplayNode<K>>> = None; 
+        let mut right_tree : Option<Box<SplayNode<K>>> = None;
+        let mut x : Box<SplayNode<K>> = self.root.take().unwrap();
 
-        let mut L_anchor : &mut Option<Box<SplayNode<K>>> = &mut L; 
-        let mut R_anchor : &mut Option<Box<SplayNode<K>>> = &mut R;
+        let mut left_anchor : &mut Option<Box<SplayNode<K>>> = &mut left_tree; 
+        let mut right_anchor : &mut Option<Box<SplayNode<K>>> = &mut right_tree;
 
-        let mut parent_node: &mut Box<SplayNode<K>> = &mut T;
+        // let x: &mut Box<SplayNode<K>> = &mut T;
         
-        if key < parent_node.key {
+        if key < x.key {
             // Left
-            if parent_node.left.is_some() {
-                let x = parent_node.left.take().unwrap();
+            if x.left.is_some() {
+                let mut y = x.left.take().unwrap();
 
-                // Node containing key is an immediate child of the current node
+                // Node containing key is the left child of the current node
                 // Zig
-                if key == x.key {
-                    let old_anchor = R_anchor.get_or_insert(T);
-                    R_anchor = &mut old_anchor.left;
+                if key == y.key {
+                    let old_anchor = right_anchor.get_or_insert(x);
+                    right_anchor = &mut old_anchor.left;
 
-                    T = x;
+                    x = y;
+                } else {
+                    // Left
+                    // Zig zig
+                    if key < y.key {
+                        // let z = y.left.take().unwrap();
+
+                        // let old_y_right = y.right.replace(x);
+                        // x.left = old_y_right;
+                    }
                 }
             } 
 
             // Key is not present in the tree, we splay the last node we were on
         } else {
             // Right 
-            if parent_node.right.is_some() {
-                let x = parent_node.right.take().unwrap();
+            if x.right.is_some() {
+                let y = x.right.take().unwrap();
 
-                // Node containing key is an immediate child of the current node
-                // Zig
-                if key == x.key {
-                    let old_anchor = L_anchor.get_or_insert(T);
-                    L_anchor = &mut old_anchor.right;
+                // Node containing key is the right child of the current node
+                // Zag
+                if key == y.key {
+                    let old_anchor = left_anchor.get_or_insert(x);
+                    left_anchor = &mut old_anchor.right;
 
-                    T = x;
+                    x = y;
                 }
             } 
 
@@ -118,53 +130,65 @@ impl<K: Ord + 'static> SplayTree<K> for TopDownSplayTree<K> {
         } 
 
         // Assembling the trees
-        let mut A = T.left.take();
-        let mut B = T.right.take();
+        let mut left_child = x.left.take();
+        let mut right_child = x.right.take();
 
-        swap(L_anchor, &mut A);
-        swap(R_anchor, &mut B);
+        swap(left_anchor, &mut left_child);
+        swap(right_anchor, &mut right_child);
 
-        T.left = L;
-        T.right = R;
+        x.left = left_tree;
+        x.right = right_tree;
 
-        self.root = Some(T);
+        self.root = Some(x);
     }
 }
 
 impl<K: Ord + Debug + 'static> Visit for TopDownSplayTree<K> {
-    fn in_order_visit(&self) {
+    fn in_order_visit(&self) -> String {
         if self.root.is_none() {
-            println!("Empty");
-            return;
+            return String::from("Empty");
         }
 
-        println!("Root: {:?}", self.root.as_ref().unwrap().key);
+        let mut output = String::new();
 
-        self.root.as_ref().unwrap().in_order_visit();
-        print!("\n")
+        output += &format!("Root: {:?}\n", self.root.as_ref().unwrap().key).as_str();
+
+        output += &self.root.as_ref().unwrap().in_order_visit();
+
+        output += "\n";
+
+        output
     }
 
-    fn pre_order_visit(&self) {
+    fn pre_order_visit(&self) -> String  {
         if self.root.is_none() {
-            println!("Empty");
-            return;
+            return String::from("Empty");
         }
 
-        println!("Root: {:?}", self.root.as_ref().unwrap().key);
+        let mut output = String::new();
 
-        self.root.as_ref().unwrap().pre_order_visit();
-        print!("\n")
+        output += &format!("Root: {:?}\n", self.root.as_ref().unwrap().key).as_str();
+
+        output += &self.root.as_ref().unwrap().pre_order_visit();
+
+        output += "\n";
+
+        output
     }
 
-    fn post_order_visit(&self) {
+    fn post_order_visit(&self) -> String {
         if self.root.is_none() {
-            println!("Empty");
-            return;
+            return String::from("Empty");
         }
 
-        println!("Root: {:?}", self.root.as_ref().unwrap().key);
+        let mut output = String::new();
 
-        self.root.as_ref().unwrap().post_order_visit();
-        print!("\n")
+        output += &format!("Root: {:?}\n", self.root.as_ref().unwrap().key).as_str();
+
+        output += &self.root.as_ref().unwrap().post_order_visit();
+
+        output += "\n";
+
+        output
     }
 }
