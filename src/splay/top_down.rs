@@ -79,6 +79,7 @@ impl<K: Ord + 'static + Debug> SplayTree<K> for TopDownSplayTree<K> {
 
         let mut left_tree : Option<Box<SplayNode<K>>> = None; 
         let mut right_tree : Option<Box<SplayNode<K>>> = None;
+
         let mut x : Box<SplayNode<K>> = self.root.take().unwrap();
 
         let mut left_anchor : &mut Option<Box<SplayNode<K>>> = &mut left_tree; 
@@ -89,7 +90,7 @@ impl<K: Ord + 'static + Debug> SplayTree<K> for TopDownSplayTree<K> {
         if key < x.key {
             // Left
             if x.left.is_some() {
-                let y = x.left.take().unwrap();
+                let mut y = x.left.take().unwrap();
 
                 // Node containing key is the left child of the current node
                 // Zig
@@ -102,10 +103,16 @@ impl<K: Ord + 'static + Debug> SplayTree<K> for TopDownSplayTree<K> {
                     // Left
                     // Zig zig
                     if key < y.key {
-                        // let z = y.left.take().unwrap();
+                        let z = y.left.take().unwrap();
 
-                        // let old_y_right = y.right.replace(x);
-                        // x.left = old_y_right;
+                        let old_y_right_child = y.right.take();
+                        x.left = old_y_right_child;
+                        y.right.replace(x);
+
+                        let old_anchor = right_anchor.get_or_insert(y);
+                        right_anchor = &mut old_anchor.left;
+
+                        x = z;
                     }
                 }
             } 
