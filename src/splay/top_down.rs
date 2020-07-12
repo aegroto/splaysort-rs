@@ -121,7 +121,7 @@ impl<K: Ord + 'static + Debug> SplayTree<K> for TopDownSplayTree<K> {
         } else {
             // Right 
             if x.right.is_some() {
-                let y = x.right.take().unwrap();
+                let mut y = x.right.take().unwrap();
 
                 // Node containing key is the right child of the current node
                 // Zag
@@ -130,6 +130,21 @@ impl<K: Ord + 'static + Debug> SplayTree<K> for TopDownSplayTree<K> {
                     left_anchor = &mut old_anchor.right;
 
                     x = y;
+                } else {
+                    // Right
+                    // Zag zag
+                    if key > y.key {
+                        let z = y.right.take().unwrap();
+
+                        let old_y_left_child = y.left.take();
+                        x.right = old_y_left_child;
+                        y.left.replace(x);
+
+                        let old_anchor = left_anchor.get_or_insert(y);
+                        left_anchor = &mut old_anchor.right;
+
+                        x = z;
+                    }
                 }
             } 
 

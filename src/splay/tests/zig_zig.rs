@@ -166,7 +166,7 @@ fn test_zig_zig_with_both_children_and_right_sibling() {
 }
 
 #[test]
-fn test_zig_zig_with_all_children_and_siblings() {
+fn test_zig_zig_with_all_children_and_relatives() {
     // Setup
     let mut splay_tree = default_start_tree();
 
