@@ -11,15 +11,61 @@ pub struct TopDownSplayTree<K: Ord + 'static> {
     root: Option<Box<SplayNode<K>>>
 }
 
-// impl<K: Ord + 'static + Default> TopDownSplayTree<K> {
-//     pub fn init_from_root(root: Box<SplayNode<K>>) -> Self {
-//         let mut tree : TopDownSplayTree::<K> = Default::default();
+impl<K: Ord + 'static> TopDownSplayTree<K> {
+    fn zig(x : Box<SplayNode<K>>, y : Box<SplayNode<K>>, right_anchor: &mut Option<Box<SplayNode<K>>>) -> (Box<SplayNode<K>>, &mut Option<Box<SplayNode<K>>>) {
+        let old_right_anchor = right_anchor.get_or_insert(x);
 
-//         tree.root = Some(root);
+        (y, &mut old_right_anchor.left)
+    }
 
-//         tree
-//     }
-// }
+    fn zig_zig(mut x : Box<SplayNode<K>>, mut y : Box<SplayNode<K>>, right_anchor: &mut Option<Box<SplayNode<K>>>) -> (Box<SplayNode<K>>, &mut Option<Box<SplayNode<K>>>) {
+        let z = y.left.take().unwrap();
+
+        let old_y_right_child = y.right.take();
+        x.left = old_y_right_child;
+        y.right.replace(x);
+
+        let old_anchor = right_anchor.get_or_insert(y);
+
+        (z, &mut old_anchor.left)
+    }
+
+    fn zig_zag<'a>(x : Box<SplayNode<K>>, mut y : Box<SplayNode<K>>, left_anchor: &'a mut Option<Box<SplayNode<K>>>, right_anchor: &'a mut Option<Box<SplayNode<K>>>) -> (Box<SplayNode<K>>, &'a mut Option<Box<SplayNode<K>>>, &'a mut Option<Box<SplayNode<K>>>) {
+        let z = y.right.take().unwrap();
+
+        let old_left_anchor = left_anchor.get_or_insert(y);
+        let old_right_anchor = right_anchor.get_or_insert(x);
+
+        (z, &mut old_left_anchor.right, &mut old_right_anchor.left)
+    }
+
+    fn zag(x : Box<SplayNode<K>>, y : Box<SplayNode<K>>, left_anchor: &mut Option<Box<SplayNode<K>>>) -> (Box<SplayNode<K>>, &mut Option<Box<SplayNode<K>>>) {
+        let old_left_anchor = left_anchor.get_or_insert(x);
+
+        (y, &mut old_left_anchor.right)
+    }
+
+    fn zag_zag(mut x : Box<SplayNode<K>>, mut y : Box<SplayNode<K>>, left_anchor: &mut Option<Box<SplayNode<K>>>) -> (Box<SplayNode<K>>, &mut Option<Box<SplayNode<K>>>) {
+        let z = y.right.take().unwrap();
+
+        let old_y_left_child = y.left.take();
+        x.right = old_y_left_child;
+        y.left.replace(x);
+
+        let old_anchor = left_anchor.get_or_insert(y);
+
+        (z, &mut old_anchor.right)
+    }
+
+    fn zag_zig<'a>(x : Box<SplayNode<K>>, mut y : Box<SplayNode<K>>, left_anchor: &'a mut Option<Box<SplayNode<K>>>, right_anchor: &'a mut Option<Box<SplayNode<K>>>) -> (Box<SplayNode<K>>, &'a mut Option<Box<SplayNode<K>>>, &'a mut Option<Box<SplayNode<K>>>) {
+        let z = y.left.take().unwrap();
+
+        let old_left_anchor = left_anchor.get_or_insert(x);
+        let old_right_anchor = right_anchor.get_or_insert(y);
+
+        (z, &mut old_left_anchor.right, &mut old_right_anchor.left)
+    }
+}
 
 impl<K: Ord + 'static + Debug> SplayTree<K> for TopDownSplayTree<K> {
     fn insert(&mut self, key: K) {
@@ -66,7 +112,7 @@ impl<K: Ord + 'static + Debug> SplayTree<K> for TopDownSplayTree<K> {
 
     }
 
-    fn splay<'a>(&mut self, key: K) {
+    fn splay(&mut self, key: K) {
         // If the tree is empty, there's nothing to splay
         if self.root.is_none() {
             return;
@@ -86,45 +132,33 @@ impl<K: Ord + 'static + Debug> SplayTree<K> for TopDownSplayTree<K> {
         let mut right_anchor : &mut Option<Box<SplayNode<K>>> = &mut right_tree;
 
         // let x: &mut Box<SplayNode<K>> = &mut T;
-        
+
         if key <= x.key {
             // Left
             if x.left.is_some() {
-                let mut y = x.left.take().unwrap();
+                let y = x.left.take().unwrap();
 
                 // Node containing key is the left child of the current node
                 // Zig
                 if key == y.key {
-                    let old_anchor = right_anchor.get_or_insert(x);
-                    right_anchor = &mut old_anchor.left;
-
-                    x = y;
+                    let (new_x, new_right_anchor) = TopDownSplayTree::<K>::zig(x, y, right_anchor);
+                    
+                    x = new_x;
+                    right_anchor = new_right_anchor; 
                 } else {
                     if key <= y.key {
                         // Left
                         // Zig zig
-                        let z = y.left.take().unwrap();
+                        let (new_x, new_right_anchor) = TopDownSplayTree::<K>::zig_zig(x, y, right_anchor);
 
-                        let old_y_right_child = y.right.take();
-                        x.left = old_y_right_child;
-                        y.right.replace(x);
-
-                        let old_anchor = right_anchor.get_or_insert(y);
-                        right_anchor = &mut old_anchor.left;
-
-                        x = z;
+                        x = new_x;
+                        right_anchor = new_right_anchor; 
                     } else {
-                        // Right
-                        // Zig zag
-                        let z = y.right.take().unwrap();
+                        let (new_x, new_left_anchor, new_right_anchor) = TopDownSplayTree::<K>::zig_zag(x, y, left_anchor, right_anchor);
 
-                        let old_right_anchor = right_anchor.get_or_insert(x);
-                        right_anchor = &mut old_right_anchor.left;
-
-                        let old_left_anchor = left_anchor.get_or_insert(y);
-                        left_anchor = &mut old_left_anchor.right;
-
-                        x = z;
+                        x = new_x;
+                        left_anchor = new_left_anchor; 
+                        right_anchor = new_right_anchor; 
                     }
                 }
             } 
@@ -133,48 +167,38 @@ impl<K: Ord + 'static + Debug> SplayTree<K> for TopDownSplayTree<K> {
         } else {
             // Right 
             if x.right.is_some() {
-                let mut y = x.right.take().unwrap();
+                let y = x.right.take().unwrap();
 
                 // Node containing key is the right child of the current node
                 // Zag
                 if key == y.key {
-                    let old_anchor = left_anchor.get_or_insert(x);
-                    left_anchor = &mut old_anchor.right;
-
-                    x = y;
+                    let (new_x, new_left_anchor) = TopDownSplayTree::<K>::zag(x, y, left_anchor);
+                    
+                    x = new_x;
+                    left_anchor = new_left_anchor; 
                 } else {
                     if key > y.key {
                         // Right
                         // Zag zag
-                        let z = y.right.take().unwrap();
+                        let (new_x, new_left_anchor) = TopDownSplayTree::<K>::zag_zag(x, y, left_anchor);
 
-                        let old_y_left_child = y.left.take();
-                        x.right = old_y_left_child;
-                        y.left.replace(x);
-
-                        let old_anchor = left_anchor.get_or_insert(y);
-                        left_anchor = &mut old_anchor.right;
-
-                        x = z;
+                        x = new_x;
+                        left_anchor = new_left_anchor; 
                     } else {
                         // Left
                         // Zag zig
-                        let z = y.left.take().unwrap();
+                        let (new_x, new_left_anchor, new_right_anchor) = TopDownSplayTree::<K>::zag_zig(x, y, left_anchor, right_anchor);
 
-                        let old_left_anchor = left_anchor.get_or_insert(x);
-                        left_anchor = &mut old_left_anchor.right;
-
-                        let old_right_anchor = right_anchor.get_or_insert(y);
-                        right_anchor = &mut old_right_anchor.left;
-
-                        x = z;
+                        x = new_x;
+                        left_anchor = new_left_anchor; 
+                        right_anchor = new_right_anchor;
                     }
                 }
             } 
 
             // Key is not present in the tree, we splay the last node we were on
         } 
-
+        
         // Assembling the trees
         let mut left_child = x.left.take();
         let mut right_child = x.right.take();
