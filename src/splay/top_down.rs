@@ -143,9 +143,9 @@ impl<K: Ord + 'static + Debug> SplayTree<K> for TopDownSplayTree<K> {
 
                     x = y;
                 } else {
-                    // Right
-                    // Zag zag
                     if key > y.key {
+                        // Right
+                        // Zag zag
                         let z = y.right.take().unwrap();
 
                         let old_y_left_child = y.left.take();
@@ -154,6 +154,18 @@ impl<K: Ord + 'static + Debug> SplayTree<K> for TopDownSplayTree<K> {
 
                         let old_anchor = left_anchor.get_or_insert(y);
                         left_anchor = &mut old_anchor.right;
+
+                        x = z;
+                    } else {
+                        // Left
+                        // Zag zig
+                        let z = y.left.take().unwrap();
+
+                        let old_left_anchor = left_anchor.get_or_insert(x);
+                        left_anchor = &mut old_left_anchor.right;
+
+                        let old_right_anchor = right_anchor.get_or_insert(y);
+                        right_anchor = &mut old_right_anchor.left;
 
                         x = z;
                     }
