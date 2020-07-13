@@ -1,9 +1,5 @@
 use super::{SplayTree, SplayNode};
 
-use super::visit::Visit;
-
-use std::fmt::Debug;
-
 #[derive(Default)]
 pub struct BottomUpSplayTree<K: Ord + 'static>
 {

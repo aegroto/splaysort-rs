@@ -1,5 +1,4 @@
 use crate::{SplayTree};
-use crate::splay::top_down::TopDownSplayTree;
 
 use super::default_start_tree;
 

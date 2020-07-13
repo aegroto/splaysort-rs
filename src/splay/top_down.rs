@@ -3,7 +3,7 @@ use super::{SplayTree, SplayNode};
 use super::visit::Visit;
 
 use std::fmt::Debug;
-use std::mem::{replace, swap};
+use std::mem::{swap};
 
 #[derive(Default)]
 #[derive(Debug)]
@@ -87,7 +87,7 @@ impl<K: Ord + 'static + Debug> SplayTree<K> for TopDownSplayTree<K> {
 
         // let x: &mut Box<SplayNode<K>> = &mut T;
         
-        if key < x.key {
+        if key <= x.key {
             // Left
             if x.left.is_some() {
                 let mut y = x.left.take().unwrap();
@@ -100,9 +100,9 @@ impl<K: Ord + 'static + Debug> SplayTree<K> for TopDownSplayTree<K> {
 
                     x = y;
                 } else {
-                    // Left
-                    // Zig zig
-                    if key < y.key {
+                    if key <= y.key {
+                        // Left
+                        // Zig zig
                         let z = y.left.take().unwrap();
 
                         let old_y_right_child = y.right.take();
@@ -111,6 +111,18 @@ impl<K: Ord + 'static + Debug> SplayTree<K> for TopDownSplayTree<K> {
 
                         let old_anchor = right_anchor.get_or_insert(y);
                         right_anchor = &mut old_anchor.left;
+
+                        x = z;
+                    } else {
+                        // Right
+                        // Zig zag
+                        let z = y.right.take().unwrap();
+
+                        let old_right_anchor = right_anchor.get_or_insert(x);
+                        right_anchor = &mut old_right_anchor.left;
+
+                        let old_left_anchor = left_anchor.get_or_insert(y);
+                        left_anchor = &mut old_left_anchor.right;
 
                         x = z;
                     }
