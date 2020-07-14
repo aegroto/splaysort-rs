@@ -122,3 +122,41 @@ fn test_zig_zag_with_missing_key() {
 
     assert_eq!(format!("{:?}", splay_tree), expected_tree);
 }
+
+#[test]
+fn test_zig_zag_then_zig() {
+    // Setup
+    let mut splay_tree = default_start_tree();
+
+    splay_tree.insert(9);
+    splay_tree.insert(3);
+    splay_tree.insert(5);
+    splay_tree.insert(4);
+
+    // Exercise
+    splay_tree.splay(7);
+
+    // Verification
+    let expected_tree = "TopDownSplayTree { root: Some(SplayNode { key: 5, left: Some(SplayNode { key: 3, left: None, right: Some(SplayNode { key: 4, left: None, right: None }) }), right: Some(SplayNode { key: 9, left: None, right: None }) }) }";
+
+    assert_eq!(format!("{:?}", splay_tree), expected_tree);
+}
+
+// #[test]
+// fn test_zig_zag_then_zag() {
+//     // Setup
+//     let mut splay_tree = default_start_tree();
+
+//     splay_tree.insert(9);
+//     splay_tree.insert(3);
+//     splay_tree.insert(5);
+//     splay_tree.insert(7);
+
+//     // Exercise
+//     splay_tree.splay(7);
+
+//     // Verification
+//     let expected_tree = "TopDownSplayTree { root: Some(SplayNode { key: 7, left: Some(SplayNode { key: 3, left: None, right: Some(SplayNode { key: 5, left: None, right: None }) }), right: Some(SplayNode { key: 9, left: None, right: None }) }) }";
+
+//     assert_eq!(format!("{:?}", splay_tree), expected_tree);
+// }
