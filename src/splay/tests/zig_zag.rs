@@ -104,3 +104,21 @@ fn test_zig_zag_with_all_children_and_relatives() {
 
     assert_eq!(format!("{:?}", splay_tree), expected_tree);
 }
+
+#[test]
+fn test_zig_zag_with_missing_key() {
+    // Setup
+    let mut splay_tree = default_start_tree();
+
+    splay_tree.insert(5);
+    splay_tree.insert(1);
+    splay_tree.insert(3);
+
+    // Exercise
+    splay_tree.splay(4);
+
+    // Verification
+    let expected_tree = "TopDownSplayTree { root: Some(SplayNode { key: 3, left: Some(SplayNode { key: 1, left: None, right: None }), right: Some(SplayNode { key: 5, left: None, right: None }) }) }";
+
+    assert_eq!(format!("{:?}", splay_tree), expected_tree);
+}

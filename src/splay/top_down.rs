@@ -133,71 +133,73 @@ impl<K: Ord + 'static + Debug> SplayTree<K> for TopDownSplayTree<K> {
 
         // let x: &mut Box<SplayNode<K>> = &mut T;
 
-        if key <= x.key {
-            // Left
-            if x.left.is_some() {
-                let y = x.left.take().unwrap();
+        loop {
+            if key <= x.key {
+                // Left
+                if x.left.is_some() {
+                    let y = x.left.take().unwrap();
 
-                // Node containing key is the left child of the current node
-                // Zig
-                if key == y.key {
-                    let (new_x, new_right_anchor) = TopDownSplayTree::<K>::zig(x, y, right_anchor);
-                    
-                    x = new_x;
-                    right_anchor = new_right_anchor; 
-                } else {
-                    if key <= y.key {
-                        // Left
-                        // Zig zig
-                        let (new_x, new_right_anchor) = TopDownSplayTree::<K>::zig_zig(x, y, right_anchor);
-
+                    // Node containing key is the left child of the current node
+                    // Zig
+                    if key == y.key || y.is_leaf() {
+                        let (new_x, new_right_anchor) = TopDownSplayTree::<K>::zig(x, y, right_anchor);
+                        
                         x = new_x;
                         right_anchor = new_right_anchor; 
                     } else {
-                        let (new_x, new_left_anchor, new_right_anchor) = TopDownSplayTree::<K>::zig_zag(x, y, left_anchor, right_anchor);
+                        if key <= y.key {
+                            // Left
+                            // Zig zig
+                            let (new_x, new_right_anchor) = TopDownSplayTree::<K>::zig_zig(x, y, right_anchor);
 
-                        x = new_x;
-                        left_anchor = new_left_anchor; 
-                        right_anchor = new_right_anchor; 
+                            x = new_x;
+                            right_anchor = new_right_anchor; 
+                        } else {
+                            let (new_x, new_left_anchor, new_right_anchor) = TopDownSplayTree::<K>::zig_zag(x, y, left_anchor, right_anchor);
+
+                            x = new_x;
+                            left_anchor = new_left_anchor; 
+                            right_anchor = new_right_anchor; 
+                        }
                     }
-                }
-            } 
+                } 
+            } else {
+                // Right 
+                if x.right.is_some() {
+                    let y = x.right.take().unwrap();
 
-            // Key is not present in the tree, we splay the last node we were on
-        } else {
-            // Right 
-            if x.right.is_some() {
-                let y = x.right.take().unwrap();
-
-                // Node containing key is the right child of the current node
-                // Zag
-                if key == y.key {
-                    let (new_x, new_left_anchor) = TopDownSplayTree::<K>::zag(x, y, left_anchor);
-                    
-                    x = new_x;
-                    left_anchor = new_left_anchor; 
-                } else {
-                    if key > y.key {
-                        // Right
-                        // Zag zag
-                        let (new_x, new_left_anchor) = TopDownSplayTree::<K>::zag_zag(x, y, left_anchor);
-
+                    // Node containing key is the right child of the current node
+                    // Zag
+                    if key == y.key || y.is_leaf() {
+                        let (new_x, new_left_anchor) = TopDownSplayTree::<K>::zag(x, y, left_anchor);
+                        
                         x = new_x;
                         left_anchor = new_left_anchor; 
                     } else {
-                        // Left
-                        // Zag zig
-                        let (new_x, new_left_anchor, new_right_anchor) = TopDownSplayTree::<K>::zag_zig(x, y, left_anchor, right_anchor);
+                        if key > y.key {
+                            // Right
+                            // Zag zag
+                            let (new_x, new_left_anchor) = TopDownSplayTree::<K>::zag_zag(x, y, left_anchor);
 
-                        x = new_x;
-                        left_anchor = new_left_anchor; 
-                        right_anchor = new_right_anchor;
+                            x = new_x;
+                            left_anchor = new_left_anchor; 
+                        } else {
+                            // Left
+                            // Zag zig
+                            let (new_x, new_left_anchor, new_right_anchor) = TopDownSplayTree::<K>::zag_zig(x, y, left_anchor, right_anchor);
+
+                            x = new_x;
+                            left_anchor = new_left_anchor; 
+                            right_anchor = new_right_anchor;
+                        }
                     }
-                }
+                } 
             } 
 
-            // Key is not present in the tree, we splay the last node we were on
-        } 
+            if key == x.key || x.is_leaf() {
+                break;
+            }
+        }
         
         // Assembling the trees
         let mut left_child = x.left.take();

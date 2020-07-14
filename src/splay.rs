@@ -22,3 +22,9 @@ struct SplayNode<K: Ord + 'static> {
     pub left: Option<Box<SplayNode<K>>>,
     pub right: Option<Box<SplayNode<K>>>
 }
+
+impl<K: Ord + 'static> SplayNode<K> {
+    pub fn is_leaf(&self) -> bool {
+        return self.left.is_none() && self.right.is_none();
+    }
+}

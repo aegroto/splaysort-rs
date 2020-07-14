@@ -73,3 +73,20 @@ fn test_zag_with_both_children() {
 
     assert_eq!(format!("{:?}", splay_tree), expected_tree);
 }
+
+#[test]
+fn test_zag_with_missing_key() {
+    // Setup
+    let mut splay_tree = default_start_tree();
+
+    splay_tree.insert(3);
+    splay_tree.insert(5);
+
+    // Exercise
+    splay_tree.splay(6);
+
+    // Verification
+    let expected_tree = "TopDownSplayTree { root: Some(SplayNode { key: 5, left: Some(SplayNode { key: 3, left: None, right: None }), right: None }) }";
+
+    assert_eq!(format!("{:?}", splay_tree), expected_tree);
+}
