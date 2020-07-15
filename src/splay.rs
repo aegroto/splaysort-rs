@@ -1,6 +1,7 @@
 pub mod top_down;
 
 pub mod visit;
+pub mod sort;
 
 mod tests;
 

@@ -2,6 +2,8 @@ use super::{SplayTree, SplayNode};
 
 use super::visit::Visit;
 
+use super::sort::SplaySorter;
+
 use std::fmt::Debug;
 use std::mem::{swap};
 
@@ -245,6 +247,27 @@ impl<K: Ord + 'static> SplayTree<K> for TopDownSplayTree<K> {
         x.right = right_tree;
 
         self.root = Some(x);
+    }
+}
+
+impl<K: Ord + 'static> SplaySorter<K> for TopDownSplayTree<K> {
+    fn splay_min(&mut self) {
+        // If the tree is empty, there's nothing to splay
+        if self.root.is_none() {
+            return;
+        }
+    }
+
+    fn extract_min(&mut self) -> Option<K> {
+        self.splay_min();
+
+        match self.root.take() {
+            None => None,
+            Some(root) => {
+                self.root = root.right;
+                Some(root.key)
+            }
+        }
     }
 }
 
