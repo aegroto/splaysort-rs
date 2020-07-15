@@ -11,7 +11,7 @@ fn test_zag() {
     splay_tree.insert(5);
 
     // Exercise
-    splay_tree.splay(5);
+    splay_tree.splay(&5);
 
     // Verification
     let expected_tree = "TopDownSplayTree { root: Some(SplayNode { key: 5, left: Some(SplayNode { key: 3, left: None, right: None }), right: None }) }";
@@ -29,7 +29,7 @@ fn test_zag_with_left_child() {
     splay_tree.insert(4);
 
     // Exercise
-    splay_tree.splay(5);
+    splay_tree.splay(&5);
 
     // Verification
     let expected_tree = "TopDownSplayTree { root: Some(SplayNode { key: 5, left: Some(SplayNode { key: 3, left: None, right: Some(SplayNode { key: 4, left: None, right: None }) }), right: None }) }";
@@ -47,7 +47,7 @@ fn test_zag_with_right_child() {
     splay_tree.insert(7);
 
     // Exercise
-    splay_tree.splay(5);
+    splay_tree.splay(&5);
 
     // Verification
     let expected_tree = "TopDownSplayTree { root: Some(SplayNode { key: 5, left: Some(SplayNode { key: 3, left: None, right: None }), right: Some(SplayNode { key: 7, left: None, right: None }) }) }";
@@ -66,7 +66,7 @@ fn test_zag_with_both_children() {
     splay_tree.insert(7);
 
     // Exercise
-    splay_tree.splay(5);
+    splay_tree.splay(&5);
 
     // Verification
     let expected_tree = "TopDownSplayTree { root: Some(SplayNode { key: 5, left: Some(SplayNode { key: 3, left: None, right: Some(SplayNode { key: 4, left: None, right: None }) }), right: Some(SplayNode { key: 7, left: None, right: None }) }) }";
@@ -83,7 +83,7 @@ fn test_zag_with_missing_key() {
     splay_tree.insert(5);
 
     // Exercise
-    splay_tree.splay(6);
+    splay_tree.splay(&6);
 
     // Verification
     let expected_tree = "TopDownSplayTree { root: Some(SplayNode { key: 5, left: Some(SplayNode { key: 3, left: None, right: None }), right: None }) }";

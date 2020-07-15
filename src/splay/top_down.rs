@@ -7,11 +7,11 @@ use std::mem::{swap};
 
 #[derive(Default)]
 #[derive(Debug)]
-pub struct TopDownSplayTree<K: Ord + 'static + Copy> {
+pub struct TopDownSplayTree<K: Ord + 'static> {
     root: Option<Box<SplayNode<K>>>
 }
 
-impl<K: Ord + 'static + Copy> TopDownSplayTree<K> {
+impl<K: Ord + 'static> TopDownSplayTree<K> {
     fn zig(x : Box<SplayNode<K>>, y : Box<SplayNode<K>>, right_anchor: &mut Option<Box<SplayNode<K>>>) -> (Box<SplayNode<K>>, &mut Option<Box<SplayNode<K>>>) {
         let old_right_anchor = right_anchor.get_or_insert(x);
 
@@ -67,7 +67,7 @@ impl<K: Ord + 'static + Copy> TopDownSplayTree<K> {
     }
 }
 
-impl<K: Ord + 'static + Copy> SplayTree<K> for TopDownSplayTree<K> {
+impl<K: Ord + 'static> SplayTree<K> for TopDownSplayTree<K> {
     fn insert(&mut self, key: K) {
         let node : SplayNode<K>  = SplayNode {
             key: key,
@@ -117,23 +117,23 @@ impl<K: Ord + 'static + Copy> SplayTree<K> for TopDownSplayTree<K> {
             return;
         }
 
-        self.splay(key);
+        self.splay(&node.key);
 
-        let current_root = self.root.as_mut().unwrap();
+        let mut current_root = self.root.take().unwrap();
 
-        if key <= current_root.key {
-            let old_root_left_child = current_root.left.take();
+        if node.key <= current_root.key {
+            node.left = current_root.left.take();
+            node.right.replace(current_root);
 
-            node.left = old_root_left_child;
-            current_root.left = Some(Box::new(node));
+            self.root = Some(Box::new(node));
         } else {
-            let old_root_right_child = current_root.right.take();
+            node.right = current_root.right.take();
+            node.left.replace(current_root);
 
-            node.right = old_root_right_child;
-            current_root.right = Some(Box::new(node));
+            self.root = Some(Box::new(node));
         }
 
-        self.splay(key);
+        // self.splay(key_ref);
     }
 
     fn search(&self, _key: K) {
@@ -144,14 +144,14 @@ impl<K: Ord + 'static + Copy> SplayTree<K> for TopDownSplayTree<K> {
 
     }
 
-    fn splay(&mut self, key: K) {
+    fn splay(&mut self, key: &K) {
         // If the tree is empty, there's nothing to splay
         if self.root.is_none() {
             return;
         }
 
         // The key is already at root, no need to go further
-        if key == self.root.as_ref().unwrap().key {
+        if key == &self.root.as_ref().unwrap().key {
             return;
         }
 
@@ -168,18 +168,18 @@ impl<K: Ord + 'static + Copy> SplayTree<K> for TopDownSplayTree<K> {
         loop {
             // println!("x: {:?}", x.key);
 
-            if key <= x.key {
+            if key <= &x.key {
                 // Left
                 if x.left.is_some() {
                     let y = x.left.take().unwrap();
 
-                    if key < y.key && y.left.is_some() {
+                    if key < &y.key && y.left.is_some() {
                         // println!("Zig Zig");
                         let (new_x, new_right_anchor) = TopDownSplayTree::<K>::zig_zig(x, y, right_anchor);
 
                         x = new_x;
                         right_anchor = new_right_anchor; 
-                    } else if key > y.key && y.right.is_some() {
+                    } else if key > &y.key && y.right.is_some() {
                         // println!("Zig Zag");
                         let (new_x, new_left_anchor, new_right_anchor) = TopDownSplayTree::<K>::zig_zag(x, y, left_anchor, right_anchor);
 
@@ -202,13 +202,13 @@ impl<K: Ord + 'static + Copy> SplayTree<K> for TopDownSplayTree<K> {
                 if x.right.is_some() {
                     let y = x.right.take().unwrap();
 
-                    if key > y.key && y.right.is_some() {
+                    if key > &y.key && y.right.is_some() {
                         // println!("Zag Zag");
                         let (new_x, new_left_anchor) = TopDownSplayTree::<K>::zag_zag(x, y, left_anchor);
 
                         x = new_x;
                         left_anchor = new_left_anchor; 
-                    } else if key < y.key  && y.left.is_some() {
+                    } else if key < &y.key  && y.left.is_some() {
                         // println!("Zag Zig");
 
                         let (new_x, new_left_anchor, new_right_anchor) = TopDownSplayTree::<K>::zag_zig(x, y, left_anchor, right_anchor);
@@ -229,7 +229,7 @@ impl<K: Ord + 'static + Copy> SplayTree<K> for TopDownSplayTree<K> {
                 }
             } 
 
-            if key == x.key || x.is_leaf() {
+            if key == &x.key || x.is_leaf() {
                 break;
             }
         }
@@ -248,7 +248,7 @@ impl<K: Ord + 'static + Copy> SplayTree<K> for TopDownSplayTree<K> {
     }
 }
 
-impl<K: Ord + Debug + 'static + Copy> Visit for TopDownSplayTree<K> {
+impl<K: Ord + Debug + 'static> Visit for TopDownSplayTree<K> {
     fn in_order_visit(&self) -> String {
         if self.root.is_none() {
             return String::from("Empty");
