@@ -6,7 +6,7 @@ use splay::top_down::TopDownSplayTree;
 
 use splay::SplayTree;
 
-use splay::visit::Visit;
+// use splay::visit::Visit;
 
 fn main() {
     let mut splay_tree : TopDownSplayTree<u32> = Default::default();

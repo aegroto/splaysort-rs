@@ -165,11 +165,7 @@ impl<K: Ord + 'static> SplayTree<K> for TopDownSplayTree<K> {
         let mut left_anchor : &mut Option<Box<SplayNode<K>>> = &mut left_tree; 
         let mut right_anchor : &mut Option<Box<SplayNode<K>>> = &mut right_tree;
 
-        // let x: &mut Box<SplayNode<K>> = &mut T;
-
         loop {
-            // println!("x: {:?}", x.key);
-
             if key <= &x.key {
                 // Left
                 if x.left.is_some() {
@@ -256,6 +252,45 @@ impl<K: Ord + 'static> SplaySorter<K> for TopDownSplayTree<K> {
         if self.root.is_none() {
             return;
         }
+
+        // Root already contains the minimum key
+        if self.root.as_ref().unwrap().left.is_none() {
+            return;
+        }
+
+        let mut right_tree : Option<Box<SplayNode<K>>> = None;
+
+        let mut x : Box<SplayNode<K>> = self.root.take().unwrap();
+
+        let mut right_anchor : &mut Option<Box<SplayNode<K>>> = &mut right_tree;
+
+        loop {
+            if x.left.is_none() {
+                break;
+            } 
+
+            let y = x.left.take().unwrap();
+
+            if y.left.is_some() {
+                let (new_x, new_right_anchor) = TopDownSplayTree::<K>::zig_zig(x, y, right_anchor);
+
+                x = new_x;
+                right_anchor = new_right_anchor; 
+            } else {
+                let (new_x, new_right_anchor) = TopDownSplayTree::<K>::zig(x, y, right_anchor);
+                
+                x = new_x;
+                right_anchor = new_right_anchor; 
+            } 
+        }
+
+        let mut right_child = x.right.take();
+
+        swap(right_anchor, &mut right_child);
+
+        x.right = right_tree;
+
+        self.root = Some(x);
     }
 
     fn extract_min(&mut self) -> Option<K> {
