@@ -7,11 +7,11 @@ use std::mem::{swap};
 
 #[derive(Default)]
 #[derive(Debug)]
-pub struct TopDownSplayTree<K: Ord + 'static> {
+pub struct TopDownSplayTree<K: Ord + 'static + Copy> {
     root: Option<Box<SplayNode<K>>>
 }
 
-impl<K: Ord + 'static> TopDownSplayTree<K> {
+impl<K: Ord + 'static + Copy> TopDownSplayTree<K> {
     fn zig(x : Box<SplayNode<K>>, y : Box<SplayNode<K>>, right_anchor: &mut Option<Box<SplayNode<K>>>) -> (Box<SplayNode<K>>, &mut Option<Box<SplayNode<K>>>) {
         let old_right_anchor = right_anchor.get_or_insert(x);
 
@@ -67,7 +67,7 @@ impl<K: Ord + 'static> TopDownSplayTree<K> {
     }
 }
 
-impl<K: Ord + 'static + Debug> SplayTree<K> for TopDownSplayTree<K> {
+impl<K: Ord + 'static + Copy> SplayTree<K> for TopDownSplayTree<K> {
     fn insert(&mut self, key: K) {
         let node : SplayNode<K>  = SplayNode {
             key: key,
@@ -102,6 +102,38 @@ impl<K: Ord + 'static + Debug> SplayTree<K> for TopDownSplayTree<K> {
                 }
             }
         }
+    }
+
+    fn splay_insert(&mut self, key: K) {
+        let mut node : SplayNode<K>  = SplayNode {
+            key: key,
+
+            left : None,
+            right: None
+        };
+
+        if self.root.is_none() {
+            self.root.replace(Box::new(node));
+            return;
+        }
+
+        self.splay(key);
+
+        let current_root = self.root.as_mut().unwrap();
+
+        if key <= current_root.key {
+            let old_root_left_child = current_root.left.take();
+
+            node.left = old_root_left_child;
+            current_root.left = Some(Box::new(node));
+        } else {
+            let old_root_right_child = current_root.right.take();
+
+            node.right = old_root_right_child;
+            current_root.right = Some(Box::new(node));
+        }
+
+        self.splay(key);
     }
 
     fn search(&self, _key: K) {
@@ -216,7 +248,7 @@ impl<K: Ord + 'static + Debug> SplayTree<K> for TopDownSplayTree<K> {
     }
 }
 
-impl<K: Ord + Debug + 'static> Visit for TopDownSplayTree<K> {
+impl<K: Ord + Debug + 'static + Copy> Visit for TopDownSplayTree<K> {
     fn in_order_visit(&self) -> String {
         if self.root.is_none() {
             return String::from("Empty");

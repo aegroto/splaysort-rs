@@ -7,6 +7,8 @@ mod zag_zag;
 mod zig_zag;
 mod zag_zig;
 
+mod splay_insert;
+
 fn default_start_tree() -> TopDownSplayTree<u32> {
     let splay_tree : TopDownSplayTree<u32> = Default::default();
 
