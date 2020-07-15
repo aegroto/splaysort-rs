@@ -25,15 +25,9 @@ fn main() {
     for _ in 1..100 {
         let k : u32 = rng.gen_range(0, 200);
 
-        splay_tree.insert(k);
+        splay_tree.splay_insert(k);
     }
 
-    println!("# Pre order visit");
-    splay_tree.pre_order_visit();
-
-    println!("# In order visit");
-    splay_tree.in_order_visit();
-
-    println!("# Post order visit");
-    splay_tree.post_order_visit();
+    // println!("# In order visit");
+    // println!("{}", splay_tree.in_order_visit());
 }
