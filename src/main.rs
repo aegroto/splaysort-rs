@@ -4,5 +4,5 @@ mod splay;
 mod sort;
 
 fn main() {
-    println!("Hello Sort!");
+    sort::run_experiments();
 }

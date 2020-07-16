@@ -4,7 +4,9 @@ use super::*;
 
 use super::test_utils::*;
 
-const SMALL_SIZE: usize = 1024;
+use std::time::{SystemTime};
+
+const SMALL_SIZE: usize = 1024 * 128;
 
 fn test_splaysort(n: usize) {
     // Setup
@@ -13,7 +15,15 @@ fn test_splaysort(n: usize) {
     let mut ordered_elements = Vec::<u32>::new();
 
     // Exercise 
+    let start = SystemTime::now();
+
     run_splaysort(&mut splay_tree, &mut ordered_elements);
+
+    let end = SystemTime::now();
+
+    let time = end.duration_since(start);
+
+    println!("{:?}", time);
 
     // Verify
     assert_sort(ordered_elements, n);

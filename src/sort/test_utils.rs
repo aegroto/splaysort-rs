@@ -6,7 +6,7 @@ use crate::splay::top_down::TopDownSplayTree;
 use crate::splay::SplayTree;
 
 #[allow(dead_code)]
-const TEST_SEED : u64 = 0;
+const TEST_SEED : u64 = 351255251251313153;
 
 #[allow(dead_code)]
 pub fn generate_input(n: usize) -> Vec::<u32> {
@@ -15,7 +15,7 @@ pub fn generate_input(n: usize) -> Vec::<u32> {
     let mut rng = StdRng::seed_from_u64(TEST_SEED);
 
     for _ in 0..n {
-        let k : u32 = rng.gen_range(0, 100);
+        let k : u32 = rng.gen_range(0, 100000000);
 
         input.push(k);
     }
@@ -41,8 +41,13 @@ pub fn generate_splay_tree(n: usize) -> TopDownSplayTree::<u32> {
 
     let input = generate_input(n);
 
-    input.into_iter().for_each(|x| splay_tree.splay_insert(x));
+    fill_splay_tree(&mut splay_tree, input);
 
     splay_tree
+}
+
+#[allow(dead_code)]
+pub fn fill_splay_tree(splay_tree: &mut TopDownSplayTree<u32>, input: Vec<u32>) {
+    input.into_iter().for_each(|x| splay_tree.splay_insert(x));
 }
 

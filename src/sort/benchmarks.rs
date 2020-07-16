@@ -8,32 +8,33 @@ use super::*;
 
 use super::test_utils::*;
 
+// WARNING: Those benchmarks consider input initialization due to Rust's benchmark system limit
+// Run the crate for sorting-only experimental results
+
 const SMALL_SIZE: usize = 1024;
+const MEDIUM_SIZE: usize = 1024 * 128;
 
 fn bench_splaysort(b: &mut Bencher, n: usize) {
-    // Setup
-    let mut splay_tree : TopDownSplayTree<u32> = generate_splay_tree(n);
+    b.iter(|| {
+        let mut splay_tree : TopDownSplayTree<u32> = generate_splay_tree(n);
+        let mut ordered_elements = Vec::<u32>::new();
 
-    let mut ordered_elements = Vec::<u32>::new();
-
-    // Bench 
-    b.iter(|| run_splaysort(&mut splay_tree, &mut ordered_elements));
+        run_splaysort(&mut splay_tree, &mut ordered_elements)
+    });
 }
 
 fn bench_vecsort(b: &mut Bencher, n: usize) {
-    // Setup
-    let mut input = generate_input(n);
-
-    // Exercise
-    b.iter(|| run_vecsort(&mut input));
+    b.iter(|| {
+        let input = generate_input(n);
+        run_vecsort(&mut input.clone())
+    });
 }
 
 fn bench_vecsort_unstable(b: &mut Bencher, n: usize) {
-    // Setup
-    let mut input = generate_input(n);
-
-    // Bench 
-    b.iter(|| run_vecsort_unstable(&mut input));
+    b.iter(|| {
+        let input = generate_input(n);
+        run_vecsort_unstable(&mut input.clone())
+    });
 }
 
 #[bench]
@@ -49,4 +50,19 @@ fn vecsort_small(b: &mut Bencher) {
 #[bench]
 fn vecsort_unstable_small(b: &mut Bencher) {
     bench_vecsort_unstable(b, SMALL_SIZE);
+}
+
+#[bench]
+fn splaysort_medium(b: &mut Bencher) {
+    bench_splaysort(b, MEDIUM_SIZE);
+}
+
+#[bench]
+fn vecsort_medium(b: &mut Bencher) {
+    bench_vecsort(b, MEDIUM_SIZE);
+}
+
+#[bench]
+fn vecsort_unstable_medium(b: &mut Bencher) {
+    bench_vecsort_unstable(b, MEDIUM_SIZE);
 }
