@@ -107,7 +107,7 @@ fn run_heapsort_experiments(n: usize, iterations: u32) {
 
         test_utils::fill_binary_heap(&mut heap, input);
 
-        heap_ref.replace(BinaryHeap::new());
+        heap_ref.replace(heap);
     },
     || {
         let heap = heap_ref.replace(BinaryHeap::<u32>::new());
