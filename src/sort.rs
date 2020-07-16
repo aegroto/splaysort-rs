@@ -10,6 +10,8 @@ use std::time::{Instant, Duration};
 
 use std::cell::RefCell;
 
+use std::collections::BinaryHeap;
+
 use crate::splay::sort::SplaySorter;
 
 use crate::splay::top_down::TopDownSplayTree;
@@ -28,12 +30,39 @@ pub fn run_splaysort(splay_tree: &mut TopDownSplayTree<u32>, recipient: &mut Vec
     }
 }
 
-pub fn run_experiments() {
-    println!("Running small size experiments...");
+pub fn run_heapsort(heap: BinaryHeap::<u32>) -> Vec::<u32> {
+    heap.into_sorted_vec()
+}
 
-    run_splaysort_experiments(1024 * 32, 32);
-    run_vecsort_experiments(1024 * 32, 32);
-    run_vecsort_unstable_experiments(1024 * 32, 32);
+pub fn run_experiments() {
+    let samples_count = 32;
+
+    println!("### Running small size experiments...");
+    let small_size = 1024;
+
+    run_splaysort_experiments(small_size, samples_count);
+    run_late_splaysort_experiments(small_size, samples_count);
+    run_heapsort_experiments(small_size, samples_count);
+    run_vecsort_experiments(small_size, samples_count);
+    run_vecsort_unstable_experiments(small_size, samples_count);
+
+    println!("### Running medium size experiments...");
+    let medium_size = 1024 * 32;
+
+    run_splaysort_experiments(medium_size, samples_count);
+    run_late_splaysort_experiments(medium_size, samples_count);
+    run_heapsort_experiments(medium_size, samples_count);
+    run_vecsort_experiments(medium_size, samples_count);
+    run_vecsort_unstable_experiments(medium_size, samples_count);
+
+    println!("### Running large size experiments...");
+    let large_size = 1024 * 512;
+
+    run_splaysort_experiments(large_size, samples_count);
+    run_late_splaysort_experiments(large_size, samples_count);
+    run_heapsort_experiments(large_size, samples_count);
+    run_vecsort_experiments(large_size, samples_count);
+    run_vecsort_unstable_experiments(large_size, samples_count);
 }
 
 fn run_splaysort_experiments(n: usize, iterations: u32) {
@@ -50,6 +79,41 @@ fn run_splaysort_experiments(n: usize, iterations: u32) {
     },
     || run_splaysort(&mut splay_tree_ref.borrow_mut(), &mut ordered_elements_ref.borrow_mut()),
     iterations, "SplaySort");
+}
+
+fn run_late_splaysort_experiments(n: usize, iterations: u32) {
+    let splay_tree : TopDownSplayTree<u32> = Default::default();
+    let ordered_elements = Vec::new();
+
+    let splay_tree_ref = RefCell::new(splay_tree);
+    let ordered_elements_ref = RefCell::new(ordered_elements);
+
+    run_experiments_on(
+    || {
+        splay_tree_ref.replace(test_utils::generate_unbalanced_splay_tree(n));
+        ordered_elements_ref.replace(Vec::<u32>::new());
+    },
+    || run_splaysort(&mut splay_tree_ref.borrow_mut(), &mut ordered_elements_ref.borrow_mut()),
+    iterations, "Late SplaySort");
+}
+
+fn run_heapsort_experiments(n: usize, iterations: u32) {
+    let heap_ref = RefCell::new(BinaryHeap::<u32>::new());
+
+    run_experiments_on(
+    || {
+        let input = test_utils::generate_input(n);
+        let mut heap = BinaryHeap::<u32>::new();
+
+        test_utils::fill_binary_heap(&mut heap, input);
+
+        heap_ref.replace(BinaryHeap::new());
+    },
+    || {
+        let heap = heap_ref.replace(BinaryHeap::<u32>::new());
+        let _ = run_heapsort(heap);
+    },
+    iterations, "heap.into_sorted_vec()");
 }
 
 fn run_vecsort_experiments(n: usize, iterations: u32) {
@@ -79,20 +143,24 @@ fn run_vecsort_unstable_experiments(n: usize, iterations: u32) {
 }
 
 fn run_experiments_on<T, S: FnMut() -> T, F: FnMut() -> T>(mut setup: S, mut execution: F, iterations: u32, header: &str) {
-    let mut total = Duration::new(0, 0);
+    let mut setup_total = Duration::new(0, 0);
+    let mut execution_total = Duration::new(0, 0);
 
     for _ in 0..iterations {
+        let setup_start = Instant::now();
+
         setup();
 
-        let start = Instant::now();
+        setup_total += setup_start.elapsed();
+
+        let execution_start = Instant::now();
 
         execution();
 
-        total += start.elapsed();
+        execution_total += execution_start.elapsed();
     }
 
-    let mean_execution_time = total / iterations;
-
-    println!("{} mean execution time: {:#?}", header, mean_execution_time);
+    println!("{} mean setup time: {:?} µs", header, (setup_total / iterations).as_micros());
+    println!("{} mean execution time: {:?} µs", header, (execution_total / iterations).as_micros());
 }
 

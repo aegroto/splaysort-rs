@@ -29,6 +29,41 @@ fn test_splaysort(n: usize) {
     assert_sort(ordered_elements, n);
 }
 
+fn test_late_splaysort(n: usize) {
+    // Setup
+    let mut splay_tree : TopDownSplayTree<u32> = generate_unbalanced_splay_tree(n);
+
+    let mut ordered_elements = Vec::<u32>::new();
+
+    // Exercise 
+    let start = SystemTime::now();
+
+    run_splaysort(&mut splay_tree, &mut ordered_elements);
+
+    let end = SystemTime::now();
+
+    let time = end.duration_since(start);
+
+    println!("{:?}", time);
+
+    // Verify
+    assert_sort(ordered_elements, n);
+}
+
+fn test_heapsort(n: usize) {
+    // Setup
+    let input = test_utils::generate_input(n);
+    let mut heap = BinaryHeap::<u32>::new();
+
+    test_utils::fill_binary_heap(&mut heap, input);
+
+    // Exercise
+    let sorted_vec = run_heapsort(heap);
+
+    // Verify
+    assert_sort(sorted_vec, n);
+}
+
 fn test_vecsort(n: usize) {
     // Setup
     let mut input = generate_input(n);
@@ -56,6 +91,15 @@ fn test_splaysort_small() {
     test_splaysort(SMALL_SIZE);
 }
 
+#[test]
+fn test_late_splaysort_small() {
+    test_late_splaysort(SMALL_SIZE);
+}
+
+#[test]
+fn test_heapsort_small() {
+    test_heapsort(SMALL_SIZE);
+}
 
 #[test]
 fn test_vecsort_small() {

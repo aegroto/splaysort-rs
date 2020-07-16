@@ -1,5 +1,7 @@
 use std::fmt::Debug;
 
+use std::collections::BinaryHeap;
+
 use rand::{Rng, SeedableRng, rngs::StdRng};
 
 use crate::splay::top_down::TopDownSplayTree;
@@ -47,7 +49,27 @@ pub fn generate_splay_tree(n: usize) -> TopDownSplayTree::<u32> {
 }
 
 #[allow(dead_code)]
+pub fn generate_unbalanced_splay_tree(n: usize) -> TopDownSplayTree::<u32> {
+    let mut splay_tree : TopDownSplayTree<u32> = Default::default();
+
+    let input = generate_input(n);
+
+    unbalanced_fill_splay_tree(&mut splay_tree, input);
+
+    splay_tree
+}
+
+#[allow(dead_code)]
 pub fn fill_splay_tree(splay_tree: &mut TopDownSplayTree<u32>, input: Vec<u32>) {
     input.into_iter().for_each(|x| splay_tree.splay_insert(x));
 }
 
+#[allow(dead_code)]
+pub fn unbalanced_fill_splay_tree(splay_tree: &mut TopDownSplayTree<u32>, input: Vec<u32>) {
+    input.into_iter().for_each(|x| splay_tree.insert(x));
+}
+
+#[allow(dead_code)]
+pub fn fill_binary_heap(heap: &mut BinaryHeap<u32>, input: Vec<u32>) {
+    input.into_iter().for_each(|x| heap.push(x));
+}
