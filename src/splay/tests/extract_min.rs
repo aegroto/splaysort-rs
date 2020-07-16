@@ -1,4 +1,4 @@
-use crate::{SplayTree};
+use crate::splay::SplayTree;
 use crate::splay::sort::SplaySorter;
 
 use super::default_start_tree;
