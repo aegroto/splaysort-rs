@@ -3,6 +3,7 @@ pub mod top_down;
 pub mod visit;
 pub mod sort;
 
+#[cfg(test)]
 mod tests;
 
 use std::fmt::Debug;
