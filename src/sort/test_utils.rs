@@ -11,7 +11,7 @@ use crate::splay::SplayTree;
 const TEST_SEED : u64 = 351255251251313153;
 
 #[allow(dead_code)]
-pub fn generate_input(n: usize) -> Vec::<u32> {
+pub fn generate_uniform_input(n: usize) -> Vec::<u32> {
     let mut input = Vec::<u32>::new();
 
     let mut rng = StdRng::seed_from_u64(TEST_SEED);
@@ -41,7 +41,7 @@ pub fn assert_sort<K: Ord + Debug>(vec: Vec<K>, n: usize) {
 pub fn generate_splay_tree(n: usize) -> TopDownSplayTree::<u32> {
     let mut splay_tree : TopDownSplayTree<u32> = Default::default();
 
-    let input = generate_input(n);
+    let input = generate_uniform_input(n);
 
     fill_splay_tree(&mut splay_tree, input);
 
@@ -52,7 +52,7 @@ pub fn generate_splay_tree(n: usize) -> TopDownSplayTree::<u32> {
 pub fn generate_unbalanced_splay_tree(n: usize) -> TopDownSplayTree::<u32> {
     let mut splay_tree : TopDownSplayTree<u32> = Default::default();
 
-    let input = generate_input(n);
+    let input = generate_uniform_input(n);
 
     unbalanced_fill_splay_tree(&mut splay_tree, input);
 

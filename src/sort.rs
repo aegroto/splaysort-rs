@@ -102,7 +102,7 @@ fn run_heapsort_experiments(n: usize, iterations: u32) {
 
     run_experiments_on(
     || {
-        let input = test_utils::generate_input(n);
+        let input = test_utils::generate_uniform_input(n);
         let mut heap = BinaryHeap::<u32>::new();
 
         test_utils::fill_binary_heap(&mut heap, input);
@@ -123,7 +123,7 @@ fn run_vecsort_experiments(n: usize, iterations: u32) {
 
     run_experiments_on(
     || {
-        input_ref.replace(test_utils::generate_input(n));
+        input_ref.replace(test_utils::generate_uniform_input(n));
     },
     || run_vecsort(&mut input_ref.borrow_mut()),
     iterations, "vec.sort()");
@@ -136,7 +136,7 @@ fn run_vecsort_unstable_experiments(n: usize, iterations: u32) {
 
     run_experiments_on(
     || {
-        input_ref.replace(test_utils::generate_input(n));
+        input_ref.replace(test_utils::generate_uniform_input(n));
     },
     || run_vecsort_unstable(&mut input_ref.borrow_mut()),
     iterations, "vec.unstable_sort()");

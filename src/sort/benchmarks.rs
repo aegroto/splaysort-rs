@@ -25,14 +25,14 @@ fn bench_splaysort(b: &mut Bencher, n: usize) {
 
 fn bench_vecsort(b: &mut Bencher, n: usize) {
     b.iter(|| {
-        let input = generate_input(n);
+        let input = generate_uniform_input(n);
         run_vecsort(&mut input.clone())
     });
 }
 
 fn bench_vecsort_unstable(b: &mut Bencher, n: usize) {
     b.iter(|| {
-        let input = generate_input(n);
+        let input = generate_uniform_input(n);
         run_vecsort_unstable(&mut input.clone())
     });
 }

@@ -52,7 +52,7 @@ fn test_late_splaysort(n: usize) {
 
 fn test_heapsort(n: usize) {
     // Setup
-    let input = test_utils::generate_input(n);
+    let input = test_utils::generate_uniform_input(n);
     let mut heap = BinaryHeap::<u32>::new();
 
     test_utils::fill_binary_heap(&mut heap, input);
@@ -66,7 +66,7 @@ fn test_heapsort(n: usize) {
 
 fn test_vecsort(n: usize) {
     // Setup
-    let mut input = generate_input(n);
+    let mut input = generate_uniform_input(n);
 
     // Exercise
     run_vecsort(&mut input);
@@ -77,7 +77,7 @@ fn test_vecsort(n: usize) {
 
 fn test_vecsort_unstable(n: usize) {
     // Setup
-    let mut input = generate_input(n);
+    let mut input = generate_uniform_input(n);
 
     // Exercise
     run_vecsort_unstable(&mut input);
