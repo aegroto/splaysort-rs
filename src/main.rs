@@ -1,10 +1,7 @@
 #![feature(test)]
 
 mod splay;
-mod utils;
-
-#[cfg(test)]
-mod benchmarks;
+mod sort;
 
 fn main() {
     println!("Hello Sort!");
