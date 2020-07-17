@@ -1,19 +1,17 @@
 #[cfg(test)]
 mod benchmarks;
-
 #[cfg(test)]
 mod tests;
 
 mod test_utils;
 
 use std::time::{Instant, Duration};
-
 use std::cell::RefCell;
-
 use std::collections::BinaryHeap;
 
-use crate::splay::sort::SplaySorter;
+use log::{info};
 
+use crate::splay::sort::SplaySorter;
 use crate::splay::top_down::TopDownSplayTree;
 
 pub fn run_vecsort(input : &mut Vec::<u32>) {
@@ -34,35 +32,14 @@ pub fn run_heapsort(heap: BinaryHeap::<u32>) -> Vec::<u32> {
     heap.into_sorted_vec()
 }
 
-pub fn run_experiments() {
-    let samples_count = 32;
+pub fn run_experiments(input_size: usize, samples_count: u32) {
+    info!("### Running experiments with vectors of size {} and {} samples...", input_size, samples_count);
 
-    println!("### Running small size experiments...");
-    let small_size = 1024;
-
-    run_splaysort_experiments(small_size, samples_count);
-    run_late_splaysort_experiments(small_size, samples_count);
-    run_heapsort_experiments(small_size, samples_count);
-    run_vecsort_experiments(small_size, samples_count);
-    run_vecsort_unstable_experiments(small_size, samples_count);
-
-    println!("### Running medium size experiments...");
-    let medium_size = 1024 * 32;
-
-    run_splaysort_experiments(medium_size, samples_count);
-    run_late_splaysort_experiments(medium_size, samples_count);
-    run_heapsort_experiments(medium_size, samples_count);
-    run_vecsort_experiments(medium_size, samples_count);
-    run_vecsort_unstable_experiments(medium_size, samples_count);
-
-    println!("### Running large size experiments...");
-    let large_size = 1024 * 512;
-
-    run_splaysort_experiments(large_size, samples_count);
-    run_late_splaysort_experiments(large_size, samples_count);
-    run_heapsort_experiments(large_size, samples_count);
-    run_vecsort_experiments(large_size, samples_count);
-    run_vecsort_unstable_experiments(large_size, samples_count);
+    run_splaysort_experiments(input_size, samples_count);
+    run_late_splaysort_experiments(input_size, samples_count);
+    run_heapsort_experiments(input_size, samples_count);
+    run_vecsort_experiments(input_size, samples_count);
+    run_vecsort_unstable_experiments(input_size, samples_count);
 }
 
 fn run_splaysort_experiments(n: usize, iterations: u32) {
@@ -160,7 +137,7 @@ fn run_experiments_on<T, S: FnMut() -> T, F: FnMut() -> T>(mut setup: S, mut exe
         execution_total += execution_start.elapsed();
     }
 
-    println!("{} mean setup time: {:?} µs", header, (setup_total / iterations).as_micros());
-    println!("{} mean execution time: {:?} µs", header, (execution_total / iterations).as_micros());
+    info!("{} mean setup time: {:?} µs", header, (setup_total / iterations).as_micros());
+    info!("{} mean execution time: {:?} µs", header, (execution_total / iterations).as_micros());
 }
 
