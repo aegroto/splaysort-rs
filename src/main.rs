@@ -7,7 +7,7 @@ mod sort;
 
 use std::env;
 
-use log::{error};
+use log::{warn, error};
 
 use env_logger::Env;
 
@@ -15,6 +15,11 @@ fn main() {
     env_logger::from_env(Env::default().default_filter_or("info")).init();
 
     let args: Vec<String> = env::args().collect();
+
+    if args.len() != 3 {
+        warn!("USAGE: {} input_size samples_count", args[0]);
+        return;
+    }
 
     sort::run_experiments(
         match args[1].parse::<usize>() {
