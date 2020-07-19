@@ -2,7 +2,7 @@ name: Rust
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, code-coverage]
   pull_request:
     branches: [ master ]
 
@@ -20,7 +20,11 @@ jobs:
       with:
         profile: minimal
         toolchain: nightly
+    - name: Install tools and dependencies
+      run: sudo apt install libssl-dev && cargo install cargo-tarpaulin
     - name: Build
       run: cargo +nightly build --verbose
     - name: Run tests
       run: cargo +nightly test --verbose
+    - name: Calculate code coverage
+      run: cargo +nightly tarpaulin --verbose
