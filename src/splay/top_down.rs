@@ -6,6 +6,7 @@ use super::sort::SplaySorter;
 
 use std::fmt::Debug;
 use std::mem::{swap};
+use std::cmp::Ordering;
 
 #[derive(Default)]
 #[derive(Debug)]
@@ -13,7 +14,7 @@ pub struct TopDownSplayTree<K: Ord + 'static> {
     root: Option<Box<SplayNode<K>>>
 }
 
-impl<K: Ord + 'static> TopDownSplayTree<K> {
+impl<K: Ord + 'static + Debug> TopDownSplayTree<K> {
     fn zig(x : Box<SplayNode<K>>, y : Box<SplayNode<K>>, right_anchor: &mut Option<Box<SplayNode<K>>>) -> (Box<SplayNode<K>>, &mut Option<Box<SplayNode<K>>>) {
         let old_right_anchor = right_anchor.get_or_insert(x);
 
@@ -67,9 +68,49 @@ impl<K: Ord + 'static> TopDownSplayTree<K> {
 
         (z, &mut old_left_anchor.right, &mut old_right_anchor.left)
     }
+
+    fn get_node_containing_as_mut<'a>(&'a mut self, key: K) -> &'a mut Option<Box<SplayNode<K>>> {
+        let mut x : &'a mut Option<Box<SplayNode<K>>> = &mut self.root;
+        
+        let result : &'a mut Option<Box<SplayNode<K>>> = loop {
+            if x.is_none() || x.as_ref().unwrap().key == key {
+                break x;
+            }
+            
+            let current_node = x.as_mut().unwrap();
+
+            if key < current_node.key {
+                x = &mut current_node.left;
+            } else {
+                x = &mut current_node.right;
+            }
+        };
+
+        result
+    }
+
+    fn get_node_containing(&self, key: K) -> &Option<Box<SplayNode<K>>> {
+        let mut x : &Option<Box<SplayNode<K>>> = &self.root;
+        
+        let result : &Option<Box<SplayNode<K>>> = loop {
+            if x.is_none() {
+                break x;
+            }
+            
+            let current_node = x.as_ref().unwrap();
+
+            match key.cmp(&current_node.key) {
+                Ordering::Equal => break x,
+                Ordering::Less => x = &current_node.left,
+                Ordering::Greater => x = &current_node.right,
+            }
+        };
+
+        result
+    }
 }
 
-impl<K: Ord + 'static> SplayTree<K> for TopDownSplayTree<K> {
+impl<K: Ord + 'static + Debug> SplayTree<K> for TopDownSplayTree<K> {
     fn insert(&mut self, key: K) {
         let node : SplayNode<K>  = SplayNode {
             key: key,
@@ -134,16 +175,17 @@ impl<K: Ord + 'static> SplayTree<K> for TopDownSplayTree<K> {
 
             self.root = Some(Box::new(node));
         }
-
-        // self.splay(key_ref);
     }
 
-    fn search(&self, _key: K) {
-
+    fn search(&self, key: K) -> Option<&K> {
+        match self.get_node_containing(key) {
+            Some(node) => Some(&node.key),
+            None => None
+        }
     }
 
-    fn delete(&mut self, _key: K) {
-
+    fn delete(&mut self, key: K) {
+        self.get_node_containing_as_mut(key).take();
     }
 
     fn splay(&mut self, key: &K) {
@@ -246,7 +288,7 @@ impl<K: Ord + 'static> SplayTree<K> for TopDownSplayTree<K> {
     }
 }
 
-impl<K: Ord + 'static> SplaySorter<K> for TopDownSplayTree<K> {
+impl<K: Ord + 'static + Debug> SplaySorter<K> for TopDownSplayTree<K> {
     fn splay_min(&mut self) {
         // If the tree is empty, there's nothing to splay
         if self.root.is_none() {

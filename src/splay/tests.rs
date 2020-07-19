@@ -11,6 +11,8 @@ mod splay_insert;
 
 mod extract_min;
 
+mod search;
+
 fn default_start_tree() -> TopDownSplayTree<u32> {
     let splay_tree : TopDownSplayTree<u32> = Default::default();
 
