@@ -11,6 +11,8 @@ mod binary_search;
 mod binary_delete;
 
 mod splay_insert;
+mod splay_search;
+mod splay_delete;
 
 mod extract_min;
 

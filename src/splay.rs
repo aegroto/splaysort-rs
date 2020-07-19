@@ -18,7 +18,7 @@ pub trait SplayTree<K: Ord + 'static> {
     fn splay(&mut self, key: &K);
 
     fn splay_insert(&mut self, key: K);
-    fn splay_search(&self, key: K) -> Option<&K>;
+    fn splay_search(&mut self, key: K) -> Option<&K>;
     fn splay_delete(&mut self, key: K);
 }
 

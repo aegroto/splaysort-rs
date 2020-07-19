@@ -160,44 +160,6 @@ impl<K: Ord + 'static + Debug> BinaryTree<K> for TopDownSplayTree<K> {
 }
 
 impl<K: Ord + 'static + Debug> SplayTree<K> for TopDownSplayTree<K> {
-    fn splay_insert(&mut self, key: K) {
-        let mut node : SplayNode<K>  = SplayNode {
-            key: key,
-
-            left : None,
-            right: None
-        };
-
-        if self.root.is_none() {
-            self.root.replace(Box::new(node));
-            return;
-        }
-
-        self.splay(&node.key);
-
-        let mut current_root = self.root.take().unwrap();
-
-        if node.key <= current_root.key {
-            node.left = current_root.left.take();
-            node.right.replace(current_root);
-
-            self.root = Some(Box::new(node));
-        } else {
-            node.right = current_root.right.take();
-            node.left.replace(current_root);
-
-            self.root = Some(Box::new(node));
-        }
-    }
-
-    fn splay_search(&self, _key: K) -> Option<&K> {
-       None 
-    }
-
-    fn splay_delete(&mut self, _key: K) {
-
-    }
-
     fn splay(&mut self, key: &K) {
         // If the tree is empty, there's nothing to splay
         if self.root.is_none() {
@@ -295,6 +257,69 @@ impl<K: Ord + 'static + Debug> SplayTree<K> for TopDownSplayTree<K> {
         x.right = right_tree;
 
         self.root = Some(x);
+    }
+
+    fn splay_insert(&mut self, key: K) {
+        let mut node : SplayNode<K>  = SplayNode {
+            key: key,
+
+            left : None,
+            right: None
+        };
+
+        if self.root.is_none() {
+            self.root.replace(Box::new(node));
+            return;
+        }
+
+        self.splay(&node.key);
+
+        let mut current_root = self.root.take().unwrap();
+
+        if node.key <= current_root.key {
+            node.left = current_root.left.take();
+            node.right.replace(current_root);
+
+            self.root = Some(Box::new(node));
+        } else {
+            node.right = current_root.right.take();
+            node.left.replace(current_root);
+
+            self.root = Some(Box::new(node));
+        }
+    }
+
+    fn splay_search(&mut self, key: K) -> Option<&K> {
+        self.splay(&key);
+
+        let root = self.root.as_ref();
+
+        match root {
+            None => None,
+            Some(x) => {
+                if x.key == key {
+                    Some(&x.key)
+                } else {
+                    None
+                }
+            }
+        }
+    }
+
+    fn splay_delete(&mut self, key: K) {
+        self.splay(&key);
+
+        let root = self.root.as_mut();
+
+        match root {
+            None => (),
+            Some(x) => {
+                if x.key == key {
+                    let removed_node = self.root.take().unwrap();
+                    self.root = removed_node.left.or(removed_node.right);
+                }
+            }
+        };
     }
 }
 
