@@ -1,4 +1,4 @@
-use super::{SplayTree, SplayNode};
+use super::{BinaryTree, SplayTree, SplayNode};
 
 use super::visit::Visit;
 
@@ -110,8 +110,8 @@ impl<K: Ord + 'static + Debug> TopDownSplayTree<K> {
     }
 }
 
-impl<K: Ord + 'static + Debug> SplayTree<K> for TopDownSplayTree<K> {
-    fn insert(&mut self, key: K) {
+impl<K: Ord + 'static + Debug> BinaryTree<K> for TopDownSplayTree<K> {
+    fn binary_insert(&mut self, key: K) {
         let node : SplayNode<K>  = SplayNode {
             key: key,
 
@@ -147,6 +147,19 @@ impl<K: Ord + 'static + Debug> SplayTree<K> for TopDownSplayTree<K> {
         }
     }
 
+    fn binary_search(&self, key: K) -> Option<&K> {
+        match self.get_node_containing(key) {
+            Some(node) => Some(&node.key),
+            None => None
+        }
+    }
+
+    fn binary_delete(&mut self, key: K) {
+        self.get_node_containing_as_mut(key).take();
+    }
+}
+
+impl<K: Ord + 'static + Debug> SplayTree<K> for TopDownSplayTree<K> {
     fn splay_insert(&mut self, key: K) {
         let mut node : SplayNode<K>  = SplayNode {
             key: key,
@@ -177,15 +190,12 @@ impl<K: Ord + 'static + Debug> SplayTree<K> for TopDownSplayTree<K> {
         }
     }
 
-    fn search(&self, key: K) -> Option<&K> {
-        match self.get_node_containing(key) {
-            Some(node) => Some(&node.key),
-            None => None
-        }
+    fn splay_search(&self, _key: K) -> Option<&K> {
+       None 
     }
 
-    fn delete(&mut self, key: K) {
-        self.get_node_containing_as_mut(key).take();
+    fn splay_delete(&mut self, _key: K) {
+
     }
 
     fn splay(&mut self, key: &K) {

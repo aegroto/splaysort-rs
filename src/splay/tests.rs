@@ -7,8 +7,8 @@ mod zag_zag;
 mod zig_zag;
 mod zag_zig;
 
-mod search;
-mod delete;
+mod binary_search;
+mod binary_delete;
 
 mod splay_insert;
 

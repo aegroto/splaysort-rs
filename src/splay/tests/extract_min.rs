@@ -1,4 +1,4 @@
-use crate::splay::SplayTree;
+use crate::splay::{BinaryTree};
 use crate::splay::sort::SplaySorter;
 
 use super::default_start_tree;
@@ -20,7 +20,7 @@ fn test_extract_min_with_one_node() {
     // Setup
     let mut splay_tree = default_start_tree();
 
-    splay_tree.insert(3);
+    splay_tree.binary_insert(3);
 
     // Exercise
     let min = splay_tree.extract_min();
@@ -35,9 +35,9 @@ fn test_extract_min_with_three_node() {
     // Setup
     let mut splay_tree = default_start_tree();
 
-    splay_tree.insert(3);
-    splay_tree.insert(1);
-    splay_tree.insert(5);
+    splay_tree.binary_insert(3);
+    splay_tree.binary_insert(1);
+    splay_tree.binary_insert(5);
 
     // Exercise
     let min = splay_tree.extract_min();

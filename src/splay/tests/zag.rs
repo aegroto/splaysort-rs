@@ -1,4 +1,4 @@
-use crate::splay::SplayTree;
+use crate::splay::{BinaryTree, SplayTree};
 
 use super::default_start_tree;
 
@@ -7,8 +7,8 @@ fn test_zag() {
     // Setup
     let mut splay_tree = default_start_tree();
 
-    splay_tree.insert(3);
-    splay_tree.insert(5);
+    splay_tree.binary_insert(3);
+    splay_tree.binary_insert(5);
 
     // Exercise
     splay_tree.splay(&5);
@@ -24,9 +24,9 @@ fn test_zag_with_left_child() {
     // Setup
     let mut splay_tree = default_start_tree();
 
-    splay_tree.insert(3);
-    splay_tree.insert(5);
-    splay_tree.insert(4);
+    splay_tree.binary_insert(3);
+    splay_tree.binary_insert(5);
+    splay_tree.binary_insert(4);
 
     // Exercise
     splay_tree.splay(&5);
@@ -42,9 +42,9 @@ fn test_zag_with_right_child() {
     // Setup
     let mut splay_tree = default_start_tree();
 
-    splay_tree.insert(3);
-    splay_tree.insert(5);
-    splay_tree.insert(7);
+    splay_tree.binary_insert(3);
+    splay_tree.binary_insert(5);
+    splay_tree.binary_insert(7);
 
     // Exercise
     splay_tree.splay(&5);
@@ -60,10 +60,10 @@ fn test_zag_with_both_children() {
     // Setup
     let mut splay_tree = default_start_tree();
 
-    splay_tree.insert(3);
-    splay_tree.insert(5);
-    splay_tree.insert(4);
-    splay_tree.insert(7);
+    splay_tree.binary_insert(3);
+    splay_tree.binary_insert(5);
+    splay_tree.binary_insert(4);
+    splay_tree.binary_insert(7);
 
     // Exercise
     splay_tree.splay(&5);
@@ -79,8 +79,8 @@ fn test_zag_with_missing_key() {
     // Setup
     let mut splay_tree = default_start_tree();
 
-    splay_tree.insert(3);
-    splay_tree.insert(5);
+    splay_tree.binary_insert(3);
+    splay_tree.binary_insert(5);
 
     // Exercise
     splay_tree.splay(&6);

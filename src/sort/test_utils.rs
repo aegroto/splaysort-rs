@@ -5,7 +5,7 @@ use std::collections::BinaryHeap;
 use rand::{Rng, SeedableRng, rngs::StdRng};
 
 use crate::splay::top_down::TopDownSplayTree;
-use crate::splay::SplayTree;
+use crate::splay::{BinaryTree, SplayTree};
 
 #[allow(dead_code)]
 const TEST_SEED : u64 = 351255251251313153;
@@ -66,7 +66,7 @@ pub fn fill_splay_tree(splay_tree: &mut TopDownSplayTree<u32>, input: Vec<u32>) 
 
 #[allow(dead_code)]
 pub fn unbalanced_fill_splay_tree(splay_tree: &mut TopDownSplayTree<u32>, input: Vec<u32>) {
-    input.into_iter().for_each(|x| splay_tree.insert(x));
+    input.into_iter().for_each(|x| splay_tree.binary_insert(x));
 }
 
 #[allow(dead_code)]
